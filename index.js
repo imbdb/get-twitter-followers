@@ -12,17 +12,17 @@ function ids2userObjects(client, ids) {
   return Promise.all(userLookupPromises(ids)).then(handler);
 }
 
-function accumulate(client, options, followersIds) {
-  return client.get('followers/ids', options).then(({ data: { ids, next_cursor_str: cursor } }) => {
-    const accumulatedFollowersIds = concat(followersIds, ids);
+function accumulate(client, options, FriendsIds) {
+  return client.get('friends/ids', options).then(({ data: { ids, next_cursor_str: cursor } }) => {
+    const accumulatedFriendsIds = concat(FriendsIds, ids);
     if (cursor === '0') {
-      return ids2userObjects(client, accumulatedFollowersIds);
+      return ids2userObjects(client, accumulatedFriendsIds);
     }
-    return accumulate(client, merge(options, { cursor }), accumulatedFollowersIds);
+    return accumulate(client, merge(options, { cursor }), accumulatedFriendsIds);
   });
 }
 
-export default function getTwitterFollowers(tokens, username) {
+export default function getTwitterFriends(tokens, username) {
   const client = new Twitter(tokens);
   const options = { screen_name: username, stringify_ids: true, count: 5000 };
   return accumulate(client, options, []);
